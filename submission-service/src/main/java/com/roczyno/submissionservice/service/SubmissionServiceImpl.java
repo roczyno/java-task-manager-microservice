@@ -67,7 +67,7 @@ public class SubmissionServiceImpl  implements SubmissionService{
                 sub.getSubmissionTime().toString()
         );
 
-        emailService.sendSimpleMessage(assigneeUser.getEmail(), "Task Submission", emailBody, "ADMIN");
+        emailService.sendSimpleMessage(assigneeUser.getEmail(), "Task Submission", emailBody, "Task Manager");
 
         return submissionRepository.save(sub);
     }
@@ -89,14 +89,36 @@ public class SubmissionServiceImpl  implements SubmissionService{
     }
 
     @Override
-    public Submission acceptDecline(Long taskId, String status,String jwt) throws Exception {
-        Submission sub = getTaskSubmission(taskId);
+    public Submission acceptDecline(Long id, String status, String jwt) throws Exception {
+        Submission sub = getTaskSubmission(id);
+
+        TaskDto task = taskService.completeTask(sub.getTaskId(),jwt);
+
+        User assignedUser = userService.getUserById(task.getAssignedUserId(), jwt);
         sub.setStatus(status);
-        if(status.equals("ACCEPT")){
-            taskService.completeTask(sub.getId(),jwt);
+
+        if ("ACCEPT".equalsIgnoreCase(status)) {
+            taskService.completeTask(sub.getId(), jwt);
+        } else if ("REJECTED".equalsIgnoreCase(status)) {
+            String emailBody = String.format(
+                    "<html>" +
+                            "<body>" +
+                            "<h2>Task Submission Status Update</h2>" +
+                            "<p>Dear %s,</p>" +
+                            "<p>Your recent task submission has been rejected. Please redo the task.</p>" +
+                            "<p>Best regards,<br>ADMIN</p>" +
+                            "</body>" +
+                            "</html>",
+                    assignedUser.getUsername()
+
+            );
+            emailService.sendSimpleMessage(assignedUser.getEmail(), "Task Status Update", emailBody, "Task manager");
+        } else {
+            throw new IllegalArgumentException("Invalid status value: " + status);
         }
         return submissionRepository.save(sub);
     }
+
 
     @Override
     public Submission updateTaskSubmission(Long Id, Submission submission) throws Exception {

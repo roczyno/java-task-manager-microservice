@@ -61,7 +61,6 @@ public class SubmissionController {
 @PutMapping("/{id}")
 public ResponseEntity<Submission> acceptOrDeclineSubmission(@RequestHeader("Authorization") String jwt,@PathVariable Long id,
                                                             @RequestParam String status) throws Exception {
-    userService.getUserProfile(jwt);
     Submission sub=submissionService.acceptDecline(id,status,jwt);
     return ResponseEntity.ok(sub);
 }

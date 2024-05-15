@@ -106,14 +106,14 @@ public class TaskServiceImpl implements TaskService {
                         "<p>Best regards,<br>ADMIN</p>" +
                         "</body>" +
                         "</html>",
-                user.getUsername(), // Assuming UserDto has a getUsername() method
+                user.getUsername(),
                 taskToAssign.getId(),
                 taskToAssign.getTitle(),
                 taskToAssign.getDescription(),
                 taskToAssign.getStatus().name()
         );
 
-        emailService.sendSimpleMessage(user.getEmail(), "New Task Assigned to You", emailBody, "ADMIN");
+        emailService.sendSimpleMessage(user.getEmail(), "New Task Assigned to You", emailBody, "Task Manager");
 
         return taskRepository.save(taskToAssign);
     }

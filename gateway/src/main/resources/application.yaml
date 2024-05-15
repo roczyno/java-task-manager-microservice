@@ -18,7 +18,7 @@ spring:
         - id: SUBMISSION-SERVICE
           uri: lb://SUBMISSION-SERVICE
           predicates:
-            - Path=/submissions/**,/api/submission/**
+            - Path=/submissions/**,/api/submissions/**
 
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin

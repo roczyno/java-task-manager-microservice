@@ -10,7 +10,7 @@ spring:
     generate-ddl: 'true'
     show-sql: 'true'
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     open-in-view: 'false'
     database-platform: org.hibernate.dialect.PostgreSQLInnoDBDialect
   application:
