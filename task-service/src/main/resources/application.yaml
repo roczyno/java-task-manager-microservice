@@ -22,6 +22,14 @@ spring:
   sql:
     init:
       mode: always
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: adiabajacob9@gmail.com
+    password: yxysexiqozqnyrke
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
 
 eureka:
   instance:
@@ -31,3 +39,14 @@ eureka:
     register-with-eureka: true
     serviceUrl:
       defaultZone: http://localhost:8084/eureka/
+
+
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: adiabajacob9@gmail.com
+    password: yxysexiqozqnyrke # Use an environment variable for security
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true

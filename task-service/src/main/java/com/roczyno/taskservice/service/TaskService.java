@@ -11,7 +11,7 @@ public interface TaskService {
     List<Task> getAllTasks(TaskStatus taskStatus) throws Exception;
     Task updateTask(Task task,Long id,Long userId) throws Exception;
     void deleteTask(Long id) throws Exception;
-    Task assignedToUser(Long userId, Long taskId) throws Exception;
+    Task assignedToUser(Long userId, Long taskId,String jwt) throws Exception;
     List<Task> getAssignedUsersTasks(Long userId,TaskStatus taskStatus) throws Exception;
     Task completeTask(Long id) throws Exception;
 }
