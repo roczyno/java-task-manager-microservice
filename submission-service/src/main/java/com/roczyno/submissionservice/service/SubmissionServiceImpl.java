@@ -4,29 +4,28 @@ import com.roczyno.submissionservice.external.task.TaskDto;
 import com.roczyno.submissionservice.external.task.TaskService;
 import com.roczyno.submissionservice.model.Submission;
 import com.roczyno.submissionservice.repository.SubmissionRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class SubmissionServiceImpl  implements SubmissionService{
     private final SubmissionRepository submissionRepository;
     private final TaskService taskService;
 
-    public SubmissionServiceImpl(SubmissionRepository submissionRepository, TaskService taskService) {
-        this.submissionRepository = submissionRepository;
-        this.taskService = taskService;
-    }
 
     @Override
-    public Submission submitTask(Long taskId, Long userId, String githubLink,String jwt) throws Exception {
+    public Submission submitTask(Long taskId, Long userId, String githubLink,String jwt,String deployedUrl) throws Exception {
         TaskDto task=taskService.getTask(taskId,jwt);
         if(task!=null){
         Submission sub = new Submission();
         sub.setTaskId(task.getId());
         sub.setUserId(userId);
         sub.setGithubLink(githubLink);
+        sub.setDeployedUrl(deployedUrl);
         sub.setSubmissionTime(LocalDateTime.now());
         return submissionRepository.save(sub);
         }

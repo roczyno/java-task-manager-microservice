@@ -5,7 +5,7 @@ import com.roczyno.submissionservice.model.Submission;
 import java.util.List;
 
 public interface SubmissionService {
-    Submission submitTask(Long taskId,Long userId, String githubLink,String jwt) throws Exception;
+    Submission submitTask(Long taskId,Long userId, String githubLink,String jwt,String deployedurl) throws Exception;
     Submission getTaskSubmission(Long id);
     List<Submission> getTaskSubmissions();
     List<Submission> getTaskSubmissionsByTaskId(Long taskId);
