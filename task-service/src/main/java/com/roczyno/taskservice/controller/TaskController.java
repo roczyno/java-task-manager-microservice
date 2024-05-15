@@ -27,7 +27,7 @@ public class TaskController {
     public ResponseEntity<Task> createTask(@RequestBody Task task, @RequestHeader("Authorization") String jwt) throws Exception {
         UserDto user=userService.getUserProfile(jwt);
         String role= user.getRole();
-        Task res=taskService.createTask(task,role);
+        Task res=taskService.createTask(task,role,user.getId());
         return ResponseEntity.ok(res);
     }
 

@@ -17,6 +17,7 @@ public class TaskDto {
     private String description;
     private TaskStatus status;
     private Long assignedUserId;
+    private Long assigneeUserId;
     private String image;
     private List<String> tags= new ArrayList<>();
     private LocalDateTime deadline;

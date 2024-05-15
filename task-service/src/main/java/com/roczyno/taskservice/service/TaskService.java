@@ -6,7 +6,7 @@ import com.roczyno.taskservice.model.TaskStatus;
 import java.util.List;
 
 public interface TaskService {
-    Task createTask(Task task,String requesterRole) throws Exception;
+    Task createTask(Task task,String requesterRole,Long userId) throws Exception;
     Task getTaskById(Long id) throws Exception;
     List<Task> getAllTasks(TaskStatus taskStatus) throws Exception;
     Task updateTask(Task task,Long id,Long userId) throws Exception;
