@@ -39,7 +39,8 @@ public class AuthenticationService {
         newUser.setUsername(req.getUsername());
         newUser.setPassword(passwordEncoder.encode(req.getPassword()));
         newUser.setEmail(req.getEmail());
-        newUser.setRole(req.getRole());
+        newUser.setSpecialization(req.getSpecialization());
+        newUser.setRole("USER");
         return userRepository.save(newUser);
 
     }
