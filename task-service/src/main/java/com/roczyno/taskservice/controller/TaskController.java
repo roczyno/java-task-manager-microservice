@@ -72,7 +72,7 @@ public class TaskController {
         return ResponseEntity.ok(updatedTask);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteTask(@PathVariable("id") Long id, @RequestHeader("Authorization") String jwt) throws Exception {
         userService.getUserProfile(jwt);
         taskService.deleteTask(id);

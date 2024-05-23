@@ -5,6 +5,8 @@ import com.roczyno.userservice.model.User;
 import com.roczyno.userservice.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserServiceImpl implements UserService{
     private final JwtProvider jwtProvider;
@@ -36,5 +38,10 @@ public class UserServiceImpl implements UserService{
     @Override
     public User getUserById(Long id) {
         return userRepository.findById(id).orElseThrow();
+    }
+
+    @Override
+    public List<User> getAllUses() {
+        return userRepository.findAll();
     }
 }

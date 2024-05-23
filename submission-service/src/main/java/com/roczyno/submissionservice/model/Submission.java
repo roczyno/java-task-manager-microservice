@@ -20,6 +20,7 @@ public class Submission {
     private Long id;
     private Long taskId;
     private Long userId;
+    private String username;
     private String status="PENDING";
     private String githubLink;
     private String deployedUrl;

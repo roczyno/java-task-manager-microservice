@@ -99,6 +99,7 @@ public class TaskServiceImpl implements TaskService {
                         "<tr><th style='padding: 8px; text-align: left; background-color: #f2f2f2;'>Task ID</th><td style='padding: 8px;'>%d</td></tr>" +
                         "<tr><th style='padding: 8px; text-align: left; background-color: #f2f2f2;'>Task Name</th><td style='padding: 8px;'>%s</td></tr>" +
                         "<tr><th style='padding: 8px; text-align: left; background-color: #f2f2f2;'>Task Description</th><td style='padding: 8px;'>%s</td></tr>" +
+                        "<tr><th style='padding: 8px; text-align: left; background-color: #f2f2f2;'>Task Deadline</th><td style='padding: 8px;'>%s</td></tr>"+
                         "<tr><th style='padding: 8px; text-align: left; background-color: #f2f2f2;'>Status</th><td style='padding: 8px;'>%s</td></tr>" +
                         "</table>" +
                         "<p>Please complete this task as soon as possible.</p>" +
@@ -110,6 +111,7 @@ public class TaskServiceImpl implements TaskService {
                 taskToAssign.getId(),
                 taskToAssign.getTitle(),
                 taskToAssign.getDescription(),
+                taskToAssign.getDeadline(),
                 taskToAssign.getStatus().name()
         );
 

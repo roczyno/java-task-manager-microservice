@@ -40,7 +40,7 @@ public class AppConfig {
             cfg.setAllowCredentials(true);
             cfg.setAllowedMethods(Collections.singletonList("*"));
             cfg.setAllowedHeaders(Collections.singletonList("*"));
-            cfg.setAllowedOrigins(List.of("http://localhost:4200"));
+            cfg.setAllowedOrigins(List.of("http://localhost:5173/"));
             cfg.setExposedHeaders(List.of("Authorization"));
             cfg.setMaxAge(3600L);
             return cfg;

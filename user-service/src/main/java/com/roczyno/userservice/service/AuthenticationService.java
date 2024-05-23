@@ -35,7 +35,7 @@ public class AuthenticationService {
         }
 
         User newUser = new User();
-
+        newUser.setProfilePic(req.getProfilePic());
         newUser.setUsername(req.getUsername());
         newUser.setPassword(passwordEncoder.encode(req.getPassword()));
         newUser.setEmail(req.getEmail());

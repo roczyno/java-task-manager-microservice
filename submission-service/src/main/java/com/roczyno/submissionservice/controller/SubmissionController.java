@@ -30,7 +30,6 @@ public class SubmissionController {
         User user=userService.getUserProfile(jwt);
         Submission sub=submissionService.submitTask(taskId,user.getId(),githubLink,jwt,deployedUrl);
         return ResponseEntity.ok(sub);
-
     }
     @GetMapping("/{id}")
     public ResponseEntity<Submission> getSubmission(@PathVariable("id") Long id, @RequestParam String githubLink,

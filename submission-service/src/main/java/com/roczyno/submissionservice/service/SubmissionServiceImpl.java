@@ -29,6 +29,7 @@ public class SubmissionServiceImpl  implements SubmissionService{
         Submission sub = new Submission();
         sub.setTaskId(task.getId());
         sub.setUserId(userId);
+        sub.setUsername(assignedUser.getUsername());
         sub.setGithubLink(githubLink);
         sub.setDeployedUrl(deployedUrl);
         sub.setSubmissionTime(LocalDateTime.now());
