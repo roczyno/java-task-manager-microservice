@@ -1,16 +1,21 @@
 package com.roczyno.taskservice.service;
 
+import com.roczyno.taskservice.exception.TaskException;
 import com.roczyno.taskservice.external.UserDto;
 import com.roczyno.taskservice.model.Task;
 import com.roczyno.taskservice.model.TaskStatus;
 import com.roczyno.taskservice.repository.TaskRepository;
+import com.roczyno.taskservice.request.TaskRequest;
+import com.roczyno.taskservice.response.TaskResponse;
 import com.roczyno.taskservice.util.EmailService;
+import com.roczyno.taskservice.util.TaskMapper;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,81 +23,101 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final EmailService emailService;
     private final UserService userService;
+    private final TaskMapper taskMapper;
 
 
     @Override
-    public Task createTask(Task task, String requesterRole,Long userId) throws Exception {
+    public TaskResponse createTask(TaskRequest request, String jwt)  {
         String imageUrl = "https://source.unsplash.com/random?code";
+        UserDto user=userService.getUserProfile(jwt);
 
-        if (!requesterRole.equals(("ADMIN"))) {
-            throw new Exception("Only ADMIN roles are allowed to create tasks");
+        if (!user.getRole().equals(("ADMIN"))) {
+            throw new TaskException("Only ADMIN roles are allowed to create tasks");
         }
+
+        Task task=new Task();
         task.setStatus(TaskStatus.PENDING);
         task.setCreatedAt(LocalDateTime.now());
-        task.setAssigneeUserId(userId);
+        task.setAssigneeUserId(user.getId());
         task.setImage(imageUrl);
-        return taskRepository.save(task);
+        task.setTitle(request.title());
+        task.setDescription(request.description());
+        task.setDeadline(request.deadline());
+        task.setTags(request.tags());
+       Task savedTask= taskRepository.save(task);
+       return taskMapper.mapToTaskResponse(savedTask);
     }
 
     @Override
-    public Task getTaskById(Long id) throws Exception {
-        return taskRepository.findById(id).orElse(null);
+    public TaskResponse getTaskById(Long id)  {
+       Task task= taskRepository.findById(id)
+                .orElseThrow(()-> new TaskException("Task not found"));
+       return taskMapper.mapToTaskResponse(task);
     }
 
     @Override
-    public List<Task> getAllTasks(TaskStatus taskStatus) throws Exception {
+    public List<TaskResponse> getAllTasks(TaskStatus taskStatus)  {
         List<Task> allTasks = taskRepository.findAll();
         return allTasks.stream()
                 .filter(task -> taskStatus == null || task.getStatus().name().equalsIgnoreCase(taskStatus.toString()))
-                .collect(Collectors.toList());
+                .map(taskMapper::mapToTaskResponse)
+                .toList();
     }
 
 
     @Override
-    public Task updateTask(Task task, Long id, Long userId) throws Exception {
-        Task taskToUpdate = getTaskById(id);
-        if (taskToUpdate == null) {
-            throw new Exception("Task not found");
+    public TaskResponse updateTask(TaskRequest task, Long id, String jwt)  {
+        UserDto user=userService.getUserProfile(jwt);
+        Task taskToUpdate = taskRepository.findById(id)
+                .orElseThrow(()-> new TaskException("Task not found"));
+        verifyOwnership(user,taskToUpdate);
+
+        if (task.deadline() != null) {
+            taskToUpdate.setDeadline(task.deadline());
         }
-        if (task.getDeadline() != null) {
-            taskToUpdate.setDeadline(task.getDeadline());
+        if (task.image() != null) {
+            taskToUpdate.setImage(task.image());
         }
-        if (task.getImage() != null) {
-            taskToUpdate.setImage(task.getImage());
+        if (task.title() != null) {
+            taskToUpdate.setTitle(task.title());
         }
-        if (task.getTitle() != null) {
-            taskToUpdate.setTitle(task.getTitle());
+        if (task.description() != null) {
+            taskToUpdate.setDescription(task.description());
         }
-        if (task.getDescription() != null) {
-            taskToUpdate.setDescription(task.getDescription());
+        if (task.description() != null) {
+            taskToUpdate.setDescription(task.description());
         }
-        if (task.getDescription() != null) {
-            taskToUpdate.setDescription(task.getDescription());
-        }
-        return taskRepository.save(taskToUpdate);
+        Task updatedTask= taskRepository.save(taskToUpdate);
+        return taskMapper.mapToTaskResponse(updatedTask);
     }
 
     @Override
-    public void deleteTask(Long id) throws Exception {
-        Task taskToDelete = getTaskById(id);
-        if (taskToDelete == null) {
-            throw new Exception("Task not found");
-        }
+    public String deleteTask(Long id, String jwt)  {
+        UserDto user=userService.getUserProfile(jwt);
+        Task taskToDelete = taskRepository.findById(id)
+                .orElseThrow(()-> new TaskException("Task not found"));
+        verifyOwnership(user,taskToDelete);
         taskRepository.delete(taskToDelete);
+      return "task deleted successfully";
+    }
 
+    private void verifyOwnership(UserDto user, Task task) {
+        if(!user.getId().equals(task.getAssigneeUserId())){
+            throw new TaskException("You can not modify");
+        }
     }
 
     @Override
-    public Task assignedToUser(Long userId, Long taskId, String jwt) throws Exception {
-        Task taskToAssign = getTaskById(taskId);
+    public TaskResponse assignedToUser(Long userId, Long taskId, String jwt)  {
+        Task taskToAssign = taskRepository.findById(taskId)
+                .orElseThrow(()-> new TaskException("Task not found"));
         UserDto user = userService.getUserById(userId, jwt);
         if (taskToAssign == null) {
-            throw new Exception("Task not found");
+            throw new TaskException("Task not found");
         }
         taskToAssign.setAssignedUserId(userId);
         taskToAssign.setStatus(TaskStatus.ASSIGNED);
 
-        // Create a detailed message body
         String emailBody = String.format(
                 "<html>" +
                         "<body>" +
@@ -118,29 +143,38 @@ public class TaskServiceImpl implements TaskService {
                 taskToAssign.getStatus().name()
         );
 
-        emailService.sendSimpleMessage(user.getEmail(), "New Task Assigned to You", emailBody, "Task Manager");
+		try {
+			emailService.sendSimpleMessage(user.getEmail(), "New Task Assigned to You",
+                    emailBody, "Task Manager");
+		} catch (MessagingException | UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
 
-        return taskRepository.save(taskToAssign);
+		Task assignedTask= taskRepository.save(taskToAssign);
+        return taskMapper.mapToTaskResponse(assignedTask);
     }
 
 
     @Override
-    public List<Task> getAssignedUsersTasks(Long userId, TaskStatus taskStatus) throws Exception {
+    public List<TaskResponse> getAssignedUsersTasks(Long userId, TaskStatus taskStatus)  {
         List<Task> tasks = taskRepository.findByAssignedUserId(userId);
         return tasks.stream()
                 .filter(task -> taskStatus == null || task.getStatus().name().equalsIgnoreCase(taskStatus.toString()))
-                .collect(Collectors.toList());
+                .map(taskMapper::mapToTaskResponse)
+                .toList();
 
     }
 
     @Override
-    public Task completeTask(Long id) throws Exception {
-        Task taskToComplete = getTaskById(id);
+    public TaskResponse completeTask(Long id)  {
+        Task taskToComplete = taskRepository.findById(id)
+                .orElseThrow(()-> new TaskException("Task not found"));
         if (taskToComplete == null) {
-            throw new Exception("Task not found");
+            throw new TaskException("Task not found");
         }
         taskToComplete.setStatus(TaskStatus.DONE);
-        return taskRepository.save(taskToComplete);
+       Task completedTask= taskRepository.save(taskToComplete);
+       return taskMapper.mapToTaskResponse(completedTask);
 
     }
 }

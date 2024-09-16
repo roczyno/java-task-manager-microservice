@@ -1,17 +1,18 @@
 package com.roczyno.taskservice.service;
 
-import com.roczyno.taskservice.model.Task;
 import com.roczyno.taskservice.model.TaskStatus;
+import com.roczyno.taskservice.request.TaskRequest;
+import com.roczyno.taskservice.response.TaskResponse;
 
 import java.util.List;
 
 public interface TaskService {
-    Task createTask(Task task,String requesterRole,Long userId) throws Exception;
-    Task getTaskById(Long id) throws Exception;
-    List<Task> getAllTasks(TaskStatus taskStatus) throws Exception;
-    Task updateTask(Task task,Long id,Long userId) throws Exception;
-    void deleteTask(Long id) throws Exception;
-    Task assignedToUser(Long userId, Long taskId,String jwt) throws Exception;
-    List<Task> getAssignedUsersTasks(Long userId,TaskStatus taskStatus) throws Exception;
-    Task completeTask(Long id) throws Exception;
+    TaskResponse createTask(TaskRequest task, String jwt);
+    TaskResponse getTaskById(Long id);
+    List<TaskResponse> getAllTasks(TaskStatus taskStatus);
+    TaskResponse updateTask(TaskRequest task,Long id,String jwt);
+    String deleteTask(Long id, String jwt);
+    TaskResponse assignedToUser(Long userId, Long taskId,String jwt);
+    List<TaskResponse> getAssignedUsersTasks(Long userId,TaskStatus taskStatus);
+    TaskResponse completeTask(Long id);
 }
