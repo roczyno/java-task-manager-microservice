@@ -1,10 +1,14 @@
 package com.roczyno.userservice.service;
 
 import com.roczyno.userservice.config.JwtProvider;
+import com.roczyno.userservice.exception.UserException;
+import com.roczyno.userservice.model.Role;
 import com.roczyno.userservice.model.User;
 import com.roczyno.userservice.repository.UserRepository;
 import com.roczyno.userservice.request.AuthRequest;
+import com.roczyno.userservice.request.RegistrationRequest;
 import com.roczyno.userservice.response.AuthResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,42 +19,37 @@ import org.springframework.stereotype.Service;
 
 
 @Service
+@RequiredArgsConstructor
 public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtProvider jwtProvider;
 
-    public AuthenticationService(PasswordEncoder passwordEncoder, UserRepository userRepository, CustomUserDetailsService customUserDetailsService, JwtProvider jwtProvider) {
-        this.passwordEncoder = passwordEncoder;
-        this.userRepository = userRepository;
-        this.customUserDetailsService = customUserDetailsService;
-        this.jwtProvider = jwtProvider;
-    }
 
-    public User register(User req) throws Exception {
+    public String register(RegistrationRequest req)  {
         User emailExist=userRepository.findByEmail(req.getEmail());
         if(emailExist!=null){
-            throw new Exception("user with this email already exists");
+            throw new UserException("user with this email already exists");
         }
-
         User newUser = new User();
-        newUser.setProfilePic(req.getProfilePic());
         newUser.setUsername(req.getUsername());
         newUser.setPassword(passwordEncoder.encode(req.getPassword()));
         newUser.setEmail(req.getEmail());
         newUser.setSpecialization(req.getSpecialization());
-        newUser.setRole("USER");
-        return userRepository.save(newUser);
+        newUser.setRole(Role.USER);
+         userRepository.save(newUser);
+
+        return "User registered successfully";
 
     }
 
-    public AuthResponse login(AuthRequest req) throws Exception {
+    public AuthResponse login(AuthRequest req) {
         String email= req.getEmail();
         String password = req.getPassword();
         User user = userRepository.findByEmail(email);
         if(user==null){
-            throw  new Exception("User with this email not found");
+            throw  new UserException("User with this email not found");
         }
 
         Authentication authentication= authenticate(email, password);
@@ -64,6 +63,7 @@ public class AuthenticationService {
         return res;
 
     }
+
     private Authentication authenticate(String username, String password) {
 
         UserDetails userDetails= customUserDetailsService.loadUserByUsername(username);

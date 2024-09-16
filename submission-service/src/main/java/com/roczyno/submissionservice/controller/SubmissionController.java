@@ -24,9 +24,11 @@ public class SubmissionController {
         this.taskService = taskService;
     }
 
-    @PostMapping()
-    public ResponseEntity<Submission> submitTask(@RequestParam Long taskId, @RequestParam String githubLink,@RequestParam String deployedUrl,
-                                                 @RequestHeader("Authorization") String jwt) throws Exception {
+    @PostMapping("/submit")
+    public ResponseEntity<Submission> submitTask(  @RequestHeader("Authorization") String jwt,@RequestParam Long taskId,
+                                                   @RequestParam String githubLink,
+                                                 @RequestParam String deployedUrl
+                                               ) throws Exception {
         User user=userService.getUserProfile(jwt);
         Submission sub=submissionService.submitTask(taskId,user.getId(),githubLink,jwt,deployedUrl);
         return ResponseEntity.ok(sub);

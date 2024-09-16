@@ -1,0 +1,42 @@
+
+server:
+  port: 8083
+spring:
+  jpa:
+    properties:
+      hibernate:
+        globally_quoted_identifiers: 'true'
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: 'true'
+    generate-ddl: 'true'
+    show-sql: 'true'
+    hibernate:
+      ddl-auto: update
+    open-in-view: 'false'
+    database-platform: org.hibernate.dialect.PostgreSQLInnoDBDialect
+  application:
+    name: submission-service
+  datasource:
+    password: roczyno
+    username: postgres
+    url: jdbc:postgresql://postgres:5432/task_submission_db
+  sql:
+    init:
+      mode: always
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: adiabajacob9@gmail.com
+    password: yxysexiqozqnyrke
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    serviceUrl:
+      defaultZone: http://servicereg:8084/eureka/

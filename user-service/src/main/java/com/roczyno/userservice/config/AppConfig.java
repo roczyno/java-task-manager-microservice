@@ -22,9 +22,7 @@ public class AppConfig {
 
         http.sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth-> auth
-//                        .requestMatchers("/api/super_admin/**").hasAuthority("SUPER_ADMIN")
-//                        .requestMatchers("/api/admin/**").hasAnyAuthority("SUPER_ADMIN","ADMIN")
-                        .requestMatchers("/api/**").authenticated()
+                        .requestMatchers("/api/v1/**").authenticated()
                         .anyRequest().permitAll()
                 ).addFilterBefore(new JwtValidator(), BasicAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)

@@ -1,0 +1,93 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: roczyno
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - microservice-network
+    restart: unless-stopped
+
+  servicereg:
+    image: roczyno/servicereg
+    container_name: servicereg
+    ports:
+      - "8084:8084"
+    depends_on:
+      - postgres
+    networks:
+      - microservice-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://servicereg:8084/eureka
+
+  userms:
+    image: roczyno/userms
+    container_name: user
+    ports:
+      - "8081:8081"
+    depends_on:
+      - servicereg
+      - postgres
+    networks:
+      - microservice-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://servicereg:8084/eureka
+
+  taskms:
+    image: roczyno/taskms
+    container_name: task
+    ports:
+      - "8082:8082"
+    depends_on:
+      - servicereg
+      - postgres
+    networks:
+      - microservice-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://servicereg:8084/eureka
+
+  submissionms:
+    image: roczyno/submissionms
+    container_name: submission
+    ports:
+      - "8083:8083"  # Changed to avoid conflict
+    depends_on:
+      - servicereg
+      - postgres
+    networks:
+      - microservice-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://servicereg:8084/eureka
+
+  gatewayms:
+    image: roczyno/gatewayms
+    container_name: gateway
+    ports:
+      - "5000:5000"
+    depends_on:
+      - servicereg
+    networks:
+      - microservice-network
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://servicereg:8084/eureka
+
+networks:
+  microservice-network:
+    driver: bridge
+
+volumes:
+  postgres:
+
+

@@ -10,7 +10,7 @@ import com.roczyno.submissionservice.util.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -22,7 +22,8 @@ public class SubmissionServiceImpl  implements SubmissionService{
     private final UserService userService;
 
     @Override
-    public Submission submitTask(Long taskId, Long userId, String githubLink, String jwt, String deployedUrl) throws Exception {
+    public Submission submitTask(Long taskId, Long userId, String githubLink, String jwt, String deployedUrl)
+            throws Exception {
         TaskDto task = taskService.getTask(taskId, jwt);
         User assigneeUser = userService.getUserById(task.getAssigneeUserId(), jwt);
         User assignedUser = userService.getUserById(userId, jwt);
@@ -32,7 +33,7 @@ public class SubmissionServiceImpl  implements SubmissionService{
         sub.setUsername(assignedUser.getUsername());
         sub.setGithubLink(githubLink);
         sub.setDeployedUrl(deployedUrl);
-        sub.setSubmissionTime(LocalDateTime.now());
+        sub.setSubmissionTime(LocalDate.now());
 
         String emailBody = String.format(
                 "<html>" +
@@ -58,7 +59,7 @@ public class SubmissionServiceImpl  implements SubmissionService{
                         "<p>Best regards,<br>ADMIN</p>" +
                         "</body>" +
                         "</html>",
-                assigneeUser.getUsername(), // Assuming User has a getUsername() method
+                assigneeUser.getUsername(), 
                 task.getId(),
                 task.getTitle(),
                 task.getDescription(),
@@ -68,7 +69,8 @@ public class SubmissionServiceImpl  implements SubmissionService{
                 sub.getSubmissionTime().toString()
         );
 
-        emailService.sendSimpleMessage(assigneeUser.getEmail(), "Task Submission", emailBody, "Task Manager");
+        emailService.sendSimpleMessage(assigneeUser.getEmail(), "Task Submission", emailBody,
+                "Task Manager");
 
         return submissionRepository.save(sub);
     }
@@ -100,6 +102,20 @@ public class SubmissionServiceImpl  implements SubmissionService{
 
         if ("ACCEPT".equalsIgnoreCase(status)) {
             taskService.completeTask(sub.getId(), jwt);
+            String emailBody = String.format(
+                    "<html>" +
+                            "<body>" +
+                            "<h2>Task Submission Status Update</h2>" +
+                            "<p>Dear %s,</p>" +
+                            "<p>Your recent task submission has been accepted. Congratulations.</p>" +
+                            "<p>Best regards,<br>ADMIN</p>" +
+                            "</body>" +
+                            "</html>",
+                    assignedUser.getUsername()
+
+            );
+            emailService.sendSimpleMessage(assignedUser.getEmail(), "Task Status Update", emailBody,
+                    "Task manager");
         } else if ("REJECTED".equalsIgnoreCase(status)) {
             String emailBody = String.format(
                     "<html>" +
@@ -113,7 +129,8 @@ public class SubmissionServiceImpl  implements SubmissionService{
                     assignedUser.getUsername()
 
             );
-            emailService.sendSimpleMessage(assignedUser.getEmail(), "Task Status Update", emailBody, "Task manager");
+            emailService.sendSimpleMessage(assignedUser.getEmail(), "Task Status Update", emailBody,
+                    "Task manager");
         } else {
             throw new IllegalArgumentException("Invalid status value: " + status);
         }
@@ -122,7 +139,7 @@ public class SubmissionServiceImpl  implements SubmissionService{
 
 
     @Override
-    public Submission updateTaskSubmission(Long Id, Submission submission) throws Exception {
+    public Submission updateTaskSubmission(Long Id, Submission submission) {
         Submission sub = getTaskSubmission(Id);
         if(submission.getGithubLink()!=null){
             sub.setGithubLink(submission.getGithubLink());

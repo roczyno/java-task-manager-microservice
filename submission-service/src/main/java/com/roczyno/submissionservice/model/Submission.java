@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,5 +25,5 @@ public class Submission {
     private String status="PENDING";
     private String githubLink;
     private String deployedUrl;
-    private LocalDateTime submissionTime;
+    private LocalDate submissionTime;
 }

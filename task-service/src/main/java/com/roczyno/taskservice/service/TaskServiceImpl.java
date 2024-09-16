@@ -22,12 +22,15 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Task createTask(Task task, String requesterRole,Long userId) throws Exception {
+        String imageUrl = "https://source.unsplash.com/random?code";
+
         if (!requesterRole.equals(("ADMIN"))) {
             throw new Exception("Only ADMIN roles are allowed to create tasks");
         }
         task.setStatus(TaskStatus.PENDING);
         task.setCreatedAt(LocalDateTime.now());
         task.setAssigneeUserId(userId);
+        task.setImage(imageUrl);
         return taskRepository.save(task);
     }
 
@@ -87,7 +90,7 @@ public class TaskServiceImpl implements TaskService {
             throw new Exception("Task not found");
         }
         taskToAssign.setAssignedUserId(userId);
-        taskToAssign.setStatus(TaskStatus.DONE);
+        taskToAssign.setStatus(TaskStatus.ASSIGNED);
 
         // Create a detailed message body
         String emailBody = String.format(

@@ -6,10 +6,8 @@ import java.util.List;
 
 
 public interface UserService {
-    User findUserProfileByJwt(String jwt) throws Exception;
-    User findUserByEmail(String email) throws Exception;
-
+    User findUserProfileByJwt(String jwt);
+    User findUserByEmail(String email);
     User getUserById(Long id);
-
     List<User> getAllUses();
 }
