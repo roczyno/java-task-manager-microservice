@@ -85,3 +85,5 @@ Ktask-service/src/main/java/com/roczyno/taskservice/request/TaskRequest.java,9\
 Mtask-service/src/main/java/com/roczyno/taskservice/response/TaskResponse.java,9\a\9a09d099d00567d73c0c4d3ab23f0ad7079f7e74
 w
 Gtask-service/src/main/java/com/roczyno/taskservice/util/TaskMapper.java,f\7\f7da6e8c9394e2efad1a9e3b9bcf0ce2b6f60096
+y
+Itask-service/src/main/java/com/roczyno/taskservice/util/AppConstants.java,e\d\ed657a3cd9f8f265a8138f89756fde092c455b94

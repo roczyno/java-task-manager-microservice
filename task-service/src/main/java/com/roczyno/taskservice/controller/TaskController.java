@@ -5,6 +5,7 @@ import com.roczyno.taskservice.request.TaskRequest;
 import com.roczyno.taskservice.response.TaskResponse;
 import com.roczyno.taskservice.service.TaskService;
 import com.roczyno.taskservice.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class TaskController {
 
 
     @PostMapping("/create")
-    public ResponseEntity<TaskResponse> createTask(@RequestBody TaskRequest task, @RequestHeader("Authorization") String jwt)  {
+    public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody TaskRequest task, @RequestHeader("Authorization") String jwt)  {
         return ResponseEntity.ok( taskService.createTask(task,jwt));
     }
 
@@ -50,7 +51,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}/update")
-    public ResponseEntity<TaskResponse> updateTask(@PathVariable("id") Long id, @RequestBody TaskRequest task,
+    public ResponseEntity<TaskResponse> updateTask(@PathVariable("id") Long id, @Valid @RequestBody TaskRequest task,
                                            @RequestHeader("Authorization") String jwt)  {
         return ResponseEntity.ok(taskService.updateTask(task,id,jwt));
     }
