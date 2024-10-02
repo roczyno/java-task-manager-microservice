@@ -2,33 +2,7 @@ server:
   port: 8081
 
 spring:
-  jpa:
-    properties:
-      hibernate:
-        globally_quoted_identifiers: 'true'
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: 'true'
-    generate-ddl: 'true'
-    show-sql: 'true'
-    hibernate:
-      ddl-auto: update
-    open-in-view: 'false'
-    database-platform: org.hibernate.dialect.PostgreSQLInnoDBDialect
   application:
     name: user-service
-  datasource:
-    password: roczyno
-    username: postgres
-    url: jdbc:postgresql://localhost:5432/task_user_db
-  sql:
-    init:
-      mode: always
-
-eureka:
-  instance:
-    prefer-ip-address: true
-  client:
-    fetch-registry: true
-    register-with-eureka: true
-    serviceUrl:
-      defaultZone: http://localhost:8084/eureka/
+  config:
+    import: optional:configserver:http://localhost:8888

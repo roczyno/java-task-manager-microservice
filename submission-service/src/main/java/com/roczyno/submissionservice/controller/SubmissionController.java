@@ -1,69 +1,54 @@
 package com.roczyno.submissionservice.controller;
 
-import com.roczyno.submissionservice.external.task.TaskService;
-import com.roczyno.submissionservice.external.user.User;
-import com.roczyno.submissionservice.external.user.UserService;
 import com.roczyno.submissionservice.model.Submission;
 import com.roczyno.submissionservice.service.SubmissionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/submissions")
+@RequestMapping("/api/v1/submissions")
+@RequiredArgsConstructor
 public class SubmissionController {
-    private final SubmissionService submissionService;
-    private final UserService userService;
-    private final TaskService  taskService;
+	private final SubmissionService submissionService;
 
+	@PostMapping("/submit")
+	public ResponseEntity<Submission> submitTask(@RequestHeader("Authorization") String jwt, @RequestParam Long taskId,
+												 @RequestParam String githubLink,
+												 @RequestParam String deployedUrl
+	) {
+		return ResponseEntity.ok(submissionService.submitTask(taskId, githubLink, jwt, deployedUrl));
+	}
 
-    public SubmissionController(SubmissionService submissionService, UserService userService, TaskService taskService) {
-        this.submissionService = submissionService;
-        this.userService = userService;
-        this.taskService = taskService;
-    }
+	@GetMapping("/{id}")
+	public ResponseEntity<Submission> getSubmission(@PathVariable Long id) {
+		return ResponseEntity.ok(submissionService.getTaskSubmission(id));
+	}
 
-    @PostMapping("/submit")
-    public ResponseEntity<Submission> submitTask(  @RequestHeader("Authorization") String jwt,@RequestParam Long taskId,
-                                                   @RequestParam String githubLink,
-                                                 @RequestParam String deployedUrl
-                                               ) throws Exception {
-        User user=userService.getUserProfile(jwt);
-        Submission sub=submissionService.submitTask(taskId,user.getId(),githubLink,jwt,deployedUrl);
-        return ResponseEntity.ok(sub);
-    }
-    @GetMapping("/{id}")
-    public ResponseEntity<Submission> getSubmission(@PathVariable("id") Long id, @RequestParam String githubLink,
-                                                 @RequestHeader("Authorization") String jwt) throws Exception {
-     userService.getUserProfile(jwt);
-        Submission sub=submissionService.getTaskSubmission(id);
-        return ResponseEntity.ok(sub);
+	@GetMapping("/all")
+	public ResponseEntity<List<Submission>> getAllSubmissions() {
+		return ResponseEntity.ok(submissionService.getTaskSubmissions());
+	}
 
-    }
-    @GetMapping("/all")
-    public ResponseEntity<List<Submission>> getAllSubmissions(@RequestHeader("Authorization") String jwt){
-        userService.getUserProfile(jwt);
-        List<Submission> sub=submissionService.getTaskSubmissions();
-        return ResponseEntity.ok(sub);
-    }
+	@GetMapping("/all/task/{id}")
+	public ResponseEntity<List<Submission>> getAllSubmissionsOfTask(@PathVariable Long id) {
+		return ResponseEntity.ok(submissionService.getTaskSubmissionsByTaskId(id));
+	}
 
-    @GetMapping("/all/task/{id}")
-    public ResponseEntity<List<Submission>> getAllSubmissionsOfTask(@PathVariable Long id,@RequestHeader("Authorization") String jwt){
-        userService.getUserProfile(jwt);
-        List<Submission> sub=submissionService.getTaskSubmissionsByTaskId(id);
-        return ResponseEntity.ok(sub);
-    }
-
-//public ResponseEntity<Submission> updateSubmission(@RequestHeader("Authorization") String jwt,Submission submission){
-//    List<Submission> sub=submissionService.updateTaskSubmission()
-//    return ResponseEntity.ok(sub);
-//}
-@PutMapping("/{id}")
-public ResponseEntity<Submission> acceptOrDeclineSubmission(@RequestHeader("Authorization") String jwt,@PathVariable Long id,
-                                                            @RequestParam String status) throws Exception {
-    Submission sub=submissionService.acceptDecline(id,status,jwt);
-    return ResponseEntity.ok(sub);
-}
+	@PutMapping("/{id}")
+	public ResponseEntity<Submission> acceptOrDeclineSubmission(@RequestHeader("Authorization") String jwt, @PathVariable Long id,
+																@RequestParam String status) {
+		return ResponseEntity.ok(submissionService.acceptDecline(id, status, jwt));
+	}
+	@PutMapping("/update/{id}")
+	public ResponseEntity<Submission> updateSubmission(@PathVariable Long id, @RequestBody Submission submission){
+		return ResponseEntity.ok(submissionService.updateTaskSubmission(id,submission));
+	}
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteSubmission(@PathVariable Long id){
+		return ResponseEntity.ok(submissionService.deleteTaskSubmission(id));
+	}
 
 }

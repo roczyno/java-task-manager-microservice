@@ -5,11 +5,11 @@ import com.roczyno.submissionservice.model.Submission;
 import java.util.List;
 
 public interface SubmissionService {
-    Submission submitTask(Long taskId,Long userId, String githubLink,String jwt,String deployedUrl) throws Exception;
+    Submission submitTask(Long taskId, String githubLink,String jwt,String deployedUrl);
     Submission getTaskSubmission(Long id);
     List<Submission> getTaskSubmissions();
     List<Submission> getTaskSubmissionsByTaskId(Long taskId);
-    Submission acceptDecline(Long id, String status,String jwt) throws Exception;
-    Submission updateTaskSubmission(Long taskId, Submission submission) throws Exception;
-    void deleteTaskSubmission(Long submissionId);
+    Submission acceptDecline(Long id, String status,String jwt);
+    Submission updateTaskSubmission(Long id, Submission submission);
+    String deleteTaskSubmission(Long submissionId);
 }

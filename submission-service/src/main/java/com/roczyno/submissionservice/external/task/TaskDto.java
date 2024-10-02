@@ -19,7 +19,7 @@ public class TaskDto {
     private Long assignedUserId;
     private Long assigneeUserId;
     private String image;
-    private List<String> tags= new ArrayList<>();
+    private List<String> tags;
     private LocalDateTime deadline;
     private LocalDateTime createdAt;
 }

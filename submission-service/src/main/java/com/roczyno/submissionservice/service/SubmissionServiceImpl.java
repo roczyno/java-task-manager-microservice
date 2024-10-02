@@ -7,9 +7,11 @@ import com.roczyno.submissionservice.external.user.UserService;
 import com.roczyno.submissionservice.model.Submission;
 import com.roczyno.submissionservice.repository.SubmissionRepository;
 import com.roczyno.submissionservice.util.EmailService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -22,14 +24,13 @@ public class SubmissionServiceImpl  implements SubmissionService{
     private final UserService userService;
 
     @Override
-    public Submission submitTask(Long taskId, Long userId, String githubLink, String jwt, String deployedUrl)
-            throws Exception {
+    public Submission submitTask(Long taskId, String githubLink, String jwt, String deployedUrl) {
         TaskDto task = taskService.getTask(taskId, jwt);
         User assigneeUser = userService.getUserById(task.getAssigneeUserId(), jwt);
-        User assignedUser = userService.getUserById(userId, jwt);
+        User assignedUser = userService.getUserProfile(jwt);
         Submission sub = new Submission();
         sub.setTaskId(task.getId());
-        sub.setUserId(userId);
+        sub.setUserId(assignedUser.getId());
         sub.setUsername(assignedUser.getUsername());
         sub.setGithubLink(githubLink);
         sub.setDeployedUrl(deployedUrl);
@@ -69,10 +70,14 @@ public class SubmissionServiceImpl  implements SubmissionService{
                 sub.getSubmissionTime().toString()
         );
 
-        emailService.sendSimpleMessage(assigneeUser.getEmail(), "Task Submission", emailBody,
-                "Task Manager");
+		try {
+			emailService.sendSimpleMessage(assigneeUser.getEmail(), "Task Submission", emailBody,
+					"Task Manager");
+		} catch (MessagingException | UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
 
-        return submissionRepository.save(sub);
+		return submissionRepository.save(sub);
     }
 
 
@@ -92,7 +97,7 @@ public class SubmissionServiceImpl  implements SubmissionService{
     }
 
     @Override
-    public Submission acceptDecline(Long id, String status, String jwt) throws Exception {
+    public Submission acceptDecline(Long id, String status, String jwt)  {
         Submission sub = getTaskSubmission(id);
 
         TaskDto task = taskService.completeTask(sub.getTaskId(),jwt);
@@ -114,9 +119,13 @@ public class SubmissionServiceImpl  implements SubmissionService{
                     assignedUser.getUsername()
 
             );
-            emailService.sendSimpleMessage(assignedUser.getEmail(), "Task Status Update", emailBody,
-                    "Task manager");
-        } else if ("REJECTED".equalsIgnoreCase(status)) {
+			try {
+				emailService.sendSimpleMessage(assignedUser.getEmail(), "Task Status Update", emailBody,
+						"Task manager");
+			} catch (MessagingException | UnsupportedEncodingException e) {
+				throw new RuntimeException(e);
+			}
+		} else if ("REJECTED".equalsIgnoreCase(status)) {
             String emailBody = String.format(
                     "<html>" +
                             "<body>" +
@@ -129,9 +138,13 @@ public class SubmissionServiceImpl  implements SubmissionService{
                     assignedUser.getUsername()
 
             );
-            emailService.sendSimpleMessage(assignedUser.getEmail(), "Task Status Update", emailBody,
-                    "Task manager");
-        } else {
+			try {
+				emailService.sendSimpleMessage(assignedUser.getEmail(), "Task Status Update", emailBody,
+						"Task manager");
+			} catch (MessagingException | UnsupportedEncodingException e) {
+				throw new RuntimeException(e);
+			}
+		} else {
             throw new IllegalArgumentException("Invalid status value: " + status);
         }
         return submissionRepository.save(sub);
@@ -148,9 +161,10 @@ public class SubmissionServiceImpl  implements SubmissionService{
     }
 
     @Override
-    public void deleteTaskSubmission(Long submissionId) {
+    public String deleteTaskSubmission(Long submissionId) {
         Submission sub = getTaskSubmission(submissionId);
         submissionRepository.delete(sub);
+        return "submission deleted";
 
     }
 }

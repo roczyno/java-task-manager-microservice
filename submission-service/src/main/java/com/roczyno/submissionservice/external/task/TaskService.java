@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 @FeignClient(name = "SUBMISSION-SERVICE",url="http://submission:8082/")
 public interface TaskService {
-    @GetMapping("/api/task/{id}")
-    public TaskDto getTask(@PathVariable("id") Long id, @RequestHeader("Authorization") String jwt) throws Exception;
-    @PutMapping("/api/task/{id}/complete")
-    public TaskDto completeTask(@PathVariable("id") Long id, @RequestHeader("Authorization") String jwt) throws Exception;
+    @GetMapping("/api/v1/task/{id}")
+    TaskDto getTask(@PathVariable("id") Long id, @RequestHeader("Authorization") String jwt);
+    @PutMapping("/api/v1/task/{id}/complete")
+    TaskDto completeTask(@PathVariable("id") Long id, @RequestHeader("Authorization") String jwt);
 
 }
