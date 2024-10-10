@@ -8,5 +8,8 @@ spring:
     import: optional:configserver:http://localhost:8888
 
 
-
-
+logging:
+  pattern:
+    level: "%5p [${spring.application.name}, %X{traceId:-}, %X{spanId:-}]"
+  file:
+    name: logs/task_ms.log

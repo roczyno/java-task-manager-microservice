@@ -4,7 +4,7 @@ import com.roczyno.taskservice.model.TaskStatus;
 import com.roczyno.taskservice.request.TaskRequest;
 import com.roczyno.taskservice.response.TaskResponse;
 import com.roczyno.taskservice.service.TaskService;
-import com.roczyno.taskservice.service.UserService;
+import com.roczyno.taskservice.external.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

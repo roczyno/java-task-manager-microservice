@@ -1,7 +1,9 @@
 package com.roczyno.taskservice.service;
 
 import com.roczyno.taskservice.exception.TaskException;
+import com.roczyno.taskservice.external.Role;
 import com.roczyno.taskservice.external.UserDto;
+import com.roczyno.taskservice.external.UserService;
 import com.roczyno.taskservice.model.Task;
 import com.roczyno.taskservice.model.TaskStatus;
 import com.roczyno.taskservice.repository.TaskRepository;
@@ -11,6 +13,8 @@ import com.roczyno.taskservice.util.EmailService;
 import com.roczyno.taskservice.util.TaskMapper;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
@@ -19,19 +23,23 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final EmailService emailService;
     private final UserService userService;
     private final TaskMapper taskMapper;
+    private static final Logger log = LoggerFactory.getLogger(TaskServiceImpl.class);
+
 
 
     @Override
     public TaskResponse createTask(TaskRequest request, String jwt)  {
+        log.info("start to create task");
         String imageUrl = "https://source.unsplash.com/random?code";
         UserDto user=userService.getUserProfile(jwt);
 
-        if (!user.getRole().equals(("ADMIN"))) {
+        if (!user.getRole().equals((Role.ADMIN))) {
             throw new TaskException("Only ADMIN roles are allowed to create tasks");
         }
 
@@ -45,6 +53,7 @@ public class TaskServiceImpl implements TaskService {
         task.setDeadline(request.deadline());
         task.setTags(request.tags());
        Task savedTask= taskRepository.save(task);
+        log.info("task created");
        return taskMapper.mapToTaskResponse(savedTask);
     }
 

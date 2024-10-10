@@ -1,16 +1,16 @@
 package com.roczyno.taskservice.external;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
+@Setter
 public class UserDto {
     private Long id;
     private String username;
     private String password;
-    private String role;
     private String email;
+    private Role role;
+    private String specialization;
+    private String profilePic;
 }
