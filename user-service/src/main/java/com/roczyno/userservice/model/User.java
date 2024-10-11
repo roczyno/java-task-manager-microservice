@@ -2,6 +2,7 @@ package com.roczyno.userservice.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,7 +28,7 @@ public class User {
     @Column(unique = true)
     private String email;
     private Role role=Role.USER;
-    private String Specialization;
+    private String specialization;
     private String profilePic;
 
     @Override
@@ -36,14 +37,13 @@ public class User {
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
         return Objects.equals(id, user.id) && Objects.equals(username, user.username)
-                && Objects.equals(password, user.password)
-                && Objects.equals(email, user.email) && role == user.role
-                && Objects.equals(Specialization, user.Specialization)
+                && Objects.equals(password, user.password) && Objects.equals(email, user.email)
+                && role == user.role && Objects.equals(specialization, user.specialization)
                 && Objects.equals(profilePic, user.profilePic);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, password, email, role, Specialization, profilePic);
+        return Objects.hash(id, username, password, email, role, specialization, profilePic);
     }
 }

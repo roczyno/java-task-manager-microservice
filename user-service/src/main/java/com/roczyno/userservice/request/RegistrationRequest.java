@@ -20,6 +20,6 @@ public class RegistrationRequest {
 	@NotNull(message = AppConstants.CANNOT_BE_NULL)
 	private String email;
 	@NotNull(message = AppConstants.CANNOT_BE_NULL)
-	private String Specialization;
+	private String specialization;
 
 }

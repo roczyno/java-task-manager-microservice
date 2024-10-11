@@ -2,92 +2,95 @@ version: '3.8'
 
 services:
   postgres:
-    container_name: postgres
+    container_name: task_manager_pq_sql
     image: postgres
     environment:
-      POSTGRES_USER: postgres
+      POSTGRES_USER: roczyno
       POSTGRES_PASSWORD: roczyno
-      PGDATA: /data/postgres
+      PGDATA: /var/lib/postgresql/data
     volumes:
-      - postgres:/data/postgres
+      - postgres:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "1234:5432"
     networks:
-      - microservice-network
+      - task_manager_microservice_net
     restart: unless-stopped
 
-  servicereg:
-    image: roczyno/servicereg
-    container_name: servicereg
-    ports:
-      - "8084:8084"
-    depends_on:
-      - postgres
-    networks:
-      - microservice-network
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: task_manager_zookeeper
     environment:
-      SPRING_PROFILES_ACTIVE: docker
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://servicereg:8084/eureka
-
-  userms:
-    image: roczyno/userms
-    container_name: user
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - "8081:8081"
-    depends_on:
-      - servicereg
-      - postgres
+      - "22181:2181"
     networks:
-      - microservice-network
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://servicereg:8084/eureka
+      - task_manager_microservice_net
 
-  taskms:
-    image: roczyno/taskms
-    container_name: task
+  zipkin:
+    container_name: task_manager_zipkin
+    image: openzipkin/zipkin
     ports:
-      - "8082:8082"
-    depends_on:
-      - servicereg
-      - postgres
+      - "9411:9411"
     networks:
-      - microservice-network
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://servicereg:8084/eureka
+      - task_manager_microservice_net
 
-  submissionms:
-    image: roczyno/submissionms
-    container_name: submission
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.2
+    container_name: elasticsearch
+    environment:
+      - node.name=elasticsearch
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
     ports:
-      - "8083:8083"  # Changed to avoid conflict
-    depends_on:
-      - servicereg
-      - postgres
+      - "9200:9200"
     networks:
-      - microservice-network
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://servicereg:8084/eureka
+      - elk-network
 
-  gatewayms:
-    image: roczyno/gatewayms
-    container_name: gateway
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.15.2
+    container_name: logstash
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./logs:/usr/share/logstash/data/logs
     ports:
       - "5000:5000"
-    depends_on:
-      - servicereg
-    networks:
-      - microservice-network
     environment:
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://servicereg:8084/eureka
+      - 'LS_JAVA_OPTS=-Xmx256m -Xms256m'
+    networks:
+      - elk-network
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.15.2
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - 'NODE_OPTIONS=--max-old-space-size=2048'
+    networks:
+      - elk-network
+    depends_on:
+      - elasticsearch
 
 networks:
-  microservice-network:
+  task_manager_microservice_net:
+    driver: bridge
+  elk-network:
     driver: bridge
 
 volumes:
   postgres:
-
-
+  esdata:
+    driver: local

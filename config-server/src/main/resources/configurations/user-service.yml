@@ -15,9 +15,10 @@ spring:
   datasource:
     password: roczyno
     username: postgres
-    url: jdbc:postgresql://localhost:5432/task_user_db
+    url: jdbc:postgresql://localhost:5432/taskms_user_db
   sql:
     init:
       mode: always
+
 
 

@@ -6,3 +6,8 @@ spring:
     name: user-service
   config:
     import: optional:configserver:http://localhost:8888
+logging:
+  pattern:
+    level: "%5p [${spring.application.name}, %X{traceId:-}, %X{spanId:-}]"
+  file:
+    name: logs/user_ms.log

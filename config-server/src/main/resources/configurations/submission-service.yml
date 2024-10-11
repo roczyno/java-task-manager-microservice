@@ -15,7 +15,7 @@ spring:
   datasource:
     password: roczyno
     username: postgres
-    url: jdbc:postgresql://localhost:5432/task_submission_db
+    url: jdbc:postgresql://localhost:5432/taskms_sub_db
   sql:
     init:
       mode: always
@@ -27,3 +27,5 @@ spring:
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
+
+
