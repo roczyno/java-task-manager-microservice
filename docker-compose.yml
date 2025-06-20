@@ -1,33 +1,6 @@
 version: '3.8'
 
 services:
-  postgres:
-    container_name: task_manager_pq_sql
-    image: postgres
-    environment:
-      POSTGRES_USER: roczyno
-      POSTGRES_PASSWORD: roczyno
-      PGDATA: /var/lib/postgresql/data
-    volumes:
-      - postgres:/var/lib/postgresql/data
-    ports:
-      - "1234:5432"
-    networks:
-      - task_manager_microservice_net
-    restart: unless-stopped
-
-  zookeeper:
-    image: confluentinc/cp-zookeeper:latest
-    container_name: task_manager_zookeeper
-    environment:
-      ZOOKEEPER_SERVER_ID: 1
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - "22181:2181"
-    networks:
-      - task_manager_microservice_net
-
   zipkin:
     container_name: task_manager_zipkin
     image: openzipkin/zipkin
@@ -36,61 +9,8 @@ services:
     networks:
       - task_manager_microservice_net
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.2
-    container_name: elasticsearch
-    environment:
-      - node.name=elasticsearch
-      - discovery.type=single-node
-      - bootstrap.memory_lock=true
-      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - esdata:/usr/share/elasticsearch/data
-    ports:
-      - "9200:9200"
-    networks:
-      - elk-network
 
-  logstash:
-    image: docker.elastic.co/logstash/logstash:8.15.2
-    container_name: logstash
-    volumes:
-      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
-      - ./logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-      - ./logs:/usr/share/logstash/data/logs
-    ports:
-      - "5000:5000"
-    environment:
-      - 'LS_JAVA_OPTS=-Xmx256m -Xms256m'
-    networks:
-      - elk-network
-    depends_on:
-      - elasticsearch
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.15.2
-    container_name: kibana
-    ports:
-      - "5601:5601"
-    environment:
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
-      - 'NODE_OPTIONS=--max-old-space-size=2048'
-    networks:
-      - elk-network
-    depends_on:
-      - elasticsearch
 
 networks:
   task_manager_microservice_net:
     driver: bridge
-  elk-network:
-    driver: bridge
-
-volumes:
-  postgres:
-  esdata:
-    driver: local

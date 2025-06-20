@@ -6,20 +6,81 @@ spring:
           uri: lb://USER-SERVICE
           predicates:
             - Path=/api/v1/user/**,/api/v1/auth/**,/api/user/actuator/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: userServiceBreaker
+                fallbackUri: forward:/fallback/user
         - id: TASK-SERVICE
           uri: lb://TASK-SERVICE
           predicates:
             - Path=/api/v1/task/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: taskServiceBreaker
+                fallbackUri: forward:/fallback/task
         - id: SUBMISSION-SERVICE
           uri: lb://SUBMISSION-SERVICE
           predicates:
             - Path=/api/v1/submissions/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: submissionServiceBreaker
+                fallbackUri: forward:/fallback/submission
 
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
       globalcors:
         cors-configurations:
-          '[/**]':
+          "[/**]":
             allowedOrigins: "*"
             allowedMethods: "*"
             allowedHeaders: "*"
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      taskServiceBreaker:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5s
+        failureRateThreshold: 50
+        eventConsumerBufferSize: 10
+        recordExceptions:
+          - java.io.IOException
+          - java.util.concurrent.TimeoutException
+          - org.springframework.web.client.ResourceAccessException
+          - org.springframework.cloud.gateway.support.NotFoundException
+      userServiceBreaker:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5s
+        failureRateThreshold: 50
+        eventConsumerBufferSize: 10
+        recordExceptions:
+          - java.io.IOException
+          - java.util.concurrent.TimeoutException
+          - org.springframework.web.client.ResourceAccessException
+          - org.springframework.cloud.gateway.support.NotFoundException
+      submissionServiceBreaker:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5s
+        failureRateThreshold: 50
+        eventConsumerBufferSize: 10
+        recordExceptions:
+          - java.io.IOException
+          - java.util.concurrent.TimeoutException
+          - org.springframework.web.client.ResourceAccessException
+          - org.springframework.cloud.gateway.support.NotFoundException
