@@ -9,6 +9,16 @@ services:
     networks:
       - task_manager_microservice_net
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: task_manager_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      task_manager_microservice_net:
+
+
 
 
 networks:
