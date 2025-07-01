@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Task Submission Notification</title>
+</head>
+<body>
+<h2>Task Submission Notification</h2>
+<p>Hello <span th:text="${assignerUsername}">Assigner</span>,</p>
+<p><span th:text="${assigneeUsername}">Assignee</span> has submitted a task.</p>
+<ul>
+    <li><strong>Task ID:</strong> <span th:text="${taskId}">ID</span></li>
+    <li><strong>Title:</strong> <span th:text="${taskTitle}">Title</span></li>
+    <li><strong>Description:</strong> <span th:text="${taskDescription}">Description</span></li>
+    <li><strong>GitHub Link:</strong> <a th:href="${githubLink}" th:text="${githubLink}">Link</a></li>
+    <li><strong>Deployed URL:</strong> <a th:href="${deployedUrl}" th:text="${deployedUrl}">Link</a></li>
+</ul>
+<p>Thank you,<br/>Notification Service Team</p>
+</body>
+</html>

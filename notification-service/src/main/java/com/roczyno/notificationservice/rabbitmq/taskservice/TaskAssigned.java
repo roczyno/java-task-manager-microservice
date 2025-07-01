@@ -1,4 +1,4 @@
-package com.roczyno.notificationservice.rabbitmq;
+package com.roczyno.notificationservice.rabbitmq.taskservice;
 
 
 public record TaskAssigned(

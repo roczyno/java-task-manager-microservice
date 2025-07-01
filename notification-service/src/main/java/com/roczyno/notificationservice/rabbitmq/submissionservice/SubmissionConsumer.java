@@ -1,6 +1,5 @@
-package com.roczyno.notificationservice.rabbitmq;
+package com.roczyno.notificationservice.rabbitmq.submissionservice;
 
-import com.roczyno.notificationservice.model.EmailTemplate;
 import com.roczyno.notificationservice.model.Notification;
 import com.roczyno.notificationservice.model.NotificationType;
 import com.roczyno.notificationservice.service.EmailService;
@@ -12,31 +11,30 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
-@RequiredArgsConstructor
 @Component
-public class TaskConsumer {
+@RequiredArgsConstructor
+public class SubmissionConsumer {
 
 	private final NotificationService notificationService;
 	private final EmailService emailService;
 
-	@RabbitListener(queues = "task-assigned")
-	public void consumeMessage(TaskAssigned taskAssigned) {
+	@RabbitListener(queues = "task_submitted")
+	public void consumeMessage(TaskSubmitted taskSubmitted) {
 		Notification notification= Notification.builder()
 				.notificationDate(LocalDateTime.now())
 				.notificationType(NotificationType.TASK_ASSIGNED)
-				.taskAssigned(taskAssigned)
+				.taskSubmitted(taskSubmitted)
 				.build();
 
 		notificationService.saveNotification(notification);
 		try {
-			emailService.sendTaskAssignedEmail(taskAssigned.email(),taskAssigned.username(),taskAssigned.taskId(),
-					taskAssigned.taskStatus(),taskAssigned.taskDescription(), EmailTemplate.TASK_ASSIGNED);
+			emailService.sendTaskSubmittedEmail(taskSubmitted.assignedUsername(),taskSubmitted.assigneeUsername(),
+					taskSubmitted.taskId(),taskSubmitted.taskTitle(),taskSubmitted.taskDescription(),
+					taskSubmitted.githubLink(),taskSubmitted.deployedUrl());
 		} catch (MessagingException e) {
 			throw new RuntimeException(e);
 		}
 
 
 	}
-
-
 }

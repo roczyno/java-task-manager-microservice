@@ -55,4 +55,49 @@ public class EmailService {
 
 
 	}
+
+	public void sendTaskSubmittedEmail(
+			String assigneeUsername,
+			String assignerUsername,
+			String taskId,
+			String taskTitle,
+			String taskDescription,
+			String githubLink,
+			String deployedUrl
+	) throws MessagingException {
+		String templateName = EmailTemplate.TASK_SUBMITTED.name();
+
+		MimeMessage mimeMessage = mailSender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(
+				mimeMessage,
+				MULTIPART_MODE_MIXED,
+				UTF_8.name()
+		);
+
+
+		Map<String, Object> properties = new HashMap<>();
+		properties.put("assigneeUsername", assigneeUsername);
+		properties.put("assignerUsername", assignerUsername);
+		properties.put("taskId", taskId);
+		properties.put("taskTitle", taskTitle);
+		properties.put("taskDescription", taskDescription);
+		properties.put("githubLink", githubLink);
+		properties.put("deployedUrl", deployedUrl);
+
+		Context context = new Context();
+		context.setVariables(properties);
+
+
+		helper.setFrom("adiabajacob9@gmail.com");
+		helper.setTo(assignerUsername);
+		helper.setSubject("Task Submitted: " + taskTitle);
+
+		String template = templateEngine.process(templateName, context);
+
+		helper.setText(template, true);
+
+
+		mailSender.send(mimeMessage);
+	}
+
 }
