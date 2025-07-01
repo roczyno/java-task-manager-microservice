@@ -2,6 +2,7 @@ package com.roczyno.taskservice.model;
 
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,7 +31,7 @@ public class Task {
     private Long assignedUserId;
     private Long assigneeUserId;
     private String image;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> tags= new ArrayList<>();
     private LocalDateTime deadline;
     private LocalDateTime createdAt;

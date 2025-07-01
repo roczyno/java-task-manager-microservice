@@ -1,5 +1,6 @@
 package com.roczyno.notificationservice.model;
 
+import com.roczyno.notificationservice.rabbitmq.TaskAssigned;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,4 +22,5 @@ public class Notification {
 	private String id;
 	private NotificationType notificationType;
 	private LocalDateTime notificationDate;
+	private TaskAssigned taskAssigned;
 }

@@ -6,18 +6,16 @@ import com.roczyno.taskservice.external.UserDto;
 import com.roczyno.taskservice.external.UserService;
 import com.roczyno.taskservice.model.Task;
 import com.roczyno.taskservice.model.TaskStatus;
+import com.roczyno.taskservice.rabbitmq.TaskProducer;
 import com.roczyno.taskservice.repository.TaskRepository;
 import com.roczyno.taskservice.request.TaskRequest;
 import com.roczyno.taskservice.response.TaskResponse;
-import com.roczyno.taskservice.util.EmailService;
 import com.roczyno.taskservice.util.TaskMapper;
-import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,9 +24,9 @@ import java.util.List;
 
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
-    private final EmailService emailService;
     private final UserService userService;
     private final TaskMapper taskMapper;
+    private final TaskProducer taskProducer;
     private static final Logger log = LoggerFactory.getLogger(TaskServiceImpl.class);
 
 
@@ -127,39 +125,10 @@ public class TaskServiceImpl implements TaskService {
         taskToAssign.setAssignedUserId(userId);
         taskToAssign.setStatus(TaskStatus.ASSIGNED);
 
-        String emailBody = String.format(
-                "<html>" +
-                        "<body>" +
-                        "<h2>Hello %s,</h2>" +
-                        "<p>You have been assigned a new task. Below are the details:</p>" +
-                        "<table border='1' style='border-collapse: collapse; width: 100%%;'>" +
-                        "<tr><th style='padding: 8px; text-align: left; background-color: #f2f2f2;'>Task ID</th><td style='padding: 8px;'>%d</td></tr>" +
-                        "<tr><th style='padding: 8px; text-align: left; background-color: #f2f2f2;'>Task Name</th><td style='padding: 8px;'>%s</td></tr>" +
-                        "<tr><th style='padding: 8px; text-align: left; background-color: #f2f2f2;'>Task Description</th><td style='padding: 8px;'>%s</td></tr>" +
-                        "<tr><th style='padding: 8px; text-align: left; background-color: #f2f2f2;'>Task Deadline</th><td style='padding: 8px;'>%s</td></tr>"+
-                        "<tr><th style='padding: 8px; text-align: left; background-color: #f2f2f2;'>Status</th><td style='padding: 8px;'>%s</td></tr>" +
-                        "</table>" +
-                        "<p>Please complete this task as soon as possible.</p>" +
-                        "<p>Please login to <a href=\"http://localhost:5173\">our website</a> to find more details.</p>" +
-                        "<p>Best regards,<br>ADMIN</p>" +
-                        "</body>" +
-                        "</html>",
-                user.getUsername(),
-                taskToAssign.getId(),
-                taskToAssign.getTitle(),
-                taskToAssign.getDescription(),
-                taskToAssign.getDeadline(),
-                taskToAssign.getStatus().name()
-        );
-
-		try {
-			emailService.sendSimpleMessage(user.getEmail(), "New Task Assigned to You",
-                    emailBody, "Task Manager");
-		} catch (MessagingException | UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
 
 		Task assignedTask= taskRepository.save(taskToAssign);
+        taskProducer.sendMessage(assignedTask,user.getUsername(),user.getEmail());
+
         return taskMapper.mapToTaskResponse(assignedTask);
     }
 

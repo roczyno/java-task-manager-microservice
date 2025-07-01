@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Task Assigned Notification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+        .header {
+            background-color: #4CAF50;
+            padding: 10px;
+            color: white;
+            text-align: center;
+        }
+        .content {
+            margin: 20px;
+        }
+        .footer {
+            margin: 20px;
+            font-size: 0.9em;
+            color: #777;
+            text-align: center;
+        }
+        .task-details {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .task-details th, .task-details td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        .task-details th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h2>Task Assignment Notification</h2>
+</div>
+<div class="content">
+    <p>Hi <span th:text="${username}">User</span>,</p>
+    <p>You have been assigned a new task. Here are the details:</p>
+
+    <table class="task-details">
+        <tr>
+            <th>Task ID</th>
+            <td th:text="${taskId}">12345</td>
+        </tr>
+        <tr>
+            <th>Status</th>
+            <td th:text="${taskStatus}">Pending</td>
+        </tr>
+        <tr>
+            <th>Description</th>
+            <td th:text="${taskDescription}">Description of the task.</td>
+        </tr>
+    </table>
+
+    <p>Please log in to your dashboard to view more details and take action.</p>
+</div>
+<div class="footer">
+    <p>Best regards,<br/>Notification Service Team</p>
+</div>
+</body>
+</html>

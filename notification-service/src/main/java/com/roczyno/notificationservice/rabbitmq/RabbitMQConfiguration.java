@@ -1,4 +1,4 @@
-package com.roczyno.taskservice.rabbitmq;
+package com.roczyno.notificationservice.rabbitmq;
 
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
