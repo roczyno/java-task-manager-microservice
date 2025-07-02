@@ -16,13 +16,13 @@ public class RabbitMQConfiguration {
 	}
 
 	@Bean
-	public Queue taskAcceptedQueue() {
-		return new Queue("task-accepted");
+	public Queue submissionAcceptedQueue() {
+		return new Queue("submission-accepted");
 	}
 
 	@Bean
-	public Queue taskDeclinedQueue() {
-		return new Queue("task-declined");
+	public Queue submissionDeclinedQueue() {
+		return new Queue("submission-declined");
 	}
 
 	@Bean

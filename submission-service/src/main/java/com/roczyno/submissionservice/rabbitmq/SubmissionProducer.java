@@ -18,11 +18,11 @@ public class SubmissionProducer {
 
 	public void sendAcceptedMessage(String assignedUser) {
 		TaskAccepted taskAccepted=new TaskAccepted(assignedUser);
-		rabbitTemplate.convertAndSend("task-accepted", taskAccepted);
+		rabbitTemplate.convertAndSend("submission-accepted", taskAccepted);
 	}
 
 	public void sendDeclinedMessage(String assignedUser) {
 		TaskDeclined taskDeclined=new TaskDeclined(assignedUser);
-		rabbitTemplate.convertAndSend("task-declined", taskDeclined);
+		rabbitTemplate.convertAndSend("submission-declined", taskDeclined);
 	}
 }

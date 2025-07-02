@@ -38,7 +38,7 @@ public class SubmissionConsumer {
 
 	}
 
-	@RabbitListener(queues = "task-accepted")
+	@RabbitListener(queues = "submission-accepted")
 	public void consumeMessage(TaskAccepted taskAccepted) {
 		Notification notification=Notification.builder()
 				.notificationDate(LocalDateTime.now())
@@ -54,7 +54,7 @@ public class SubmissionConsumer {
 		}
 	}
 
-	@RabbitListener(queues = "task-declined")
+	@RabbitListener(queues = "submission-declined")
 	public void consumeMessage(TaskDeclined taskDeclined) {
 		Notification notification=Notification.builder()
 				.notificationDate(LocalDateTime.now())
