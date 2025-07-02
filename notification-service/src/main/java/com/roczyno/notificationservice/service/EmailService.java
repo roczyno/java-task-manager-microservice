@@ -100,4 +100,56 @@ public class EmailService {
 		mailSender.send(mimeMessage);
 	}
 
+	public void sendSubmissionAcceptedEmail(String assignedUsername) throws MessagingException {
+		String templateName = EmailTemplate.SUBMISSION_ACCEPTED.name();
+
+		MimeMessage mimeMessage = mailSender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(
+				mimeMessage,
+				MULTIPART_MODE_MIXED,
+				UTF_8.name()
+		);
+
+		Map<String, Object> properties = new HashMap<>();
+		properties.put("username", assignedUsername);
+
+		Context context = new Context();
+		context.setVariables(properties);
+
+		helper.setFrom("adiabajacob9@gmail.com");
+		helper.setTo(assignedUsername);
+		helper.setSubject("Your Task Submission was Accepted");
+
+		String template = templateEngine.process(templateName, context);
+		helper.setText(template, true);
+
+		mailSender.send(mimeMessage);
+	}
+
+	public void sendSubmissionDeclinedEmail(String assignedUsername) throws MessagingException {
+		String templateName = EmailTemplate.SUBMISSION_DECLINED.name();
+
+		MimeMessage mimeMessage = mailSender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(
+				mimeMessage,
+				MULTIPART_MODE_MIXED,
+				UTF_8.name()
+		);
+
+		Map<String, Object> properties = new HashMap<>();
+		properties.put("username", assignedUsername);
+
+		Context context = new Context();
+		context.setVariables(properties);
+
+		helper.setFrom("adiabajacob9@gmail.com");
+		helper.setTo(assignedUsername);
+		helper.setSubject("Your Task Submission was Declined");
+
+		String template = templateEngine.process(templateName, context);
+		helper.setText(template, true);
+
+		mailSender.send(mimeMessage);
+	}
+
 }

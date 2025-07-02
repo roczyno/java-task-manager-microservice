@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Submission Accepted</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+        .header {
+            background-color: #4CAF50;
+            padding: 10px;
+            color: white;
+            text-align: center;
+        }
+        .content {
+            margin: 20px;
+        }
+        .footer {
+            margin: 20px;
+            font-size: 0.9em;
+            color: #777;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h2>Submission Accepted</h2>
+</div>
+<div class="content">
+    <p>Hi <span th:text="${username}">User</span>,</p>
+    <p>Great news! Your task submission has been <strong>accepted</strong>.</p>
+    <p>Thank you for your hard work and dedication.</p>
+</div>
+<div class="footer">
+    <p>Best regards,<br/>Notification Service Team</p>
+</div>
+</body>
+</html>

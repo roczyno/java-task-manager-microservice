@@ -8,11 +8,9 @@ import com.roczyno.submissionservice.model.Submission;
 import com.roczyno.submissionservice.rabbitmq.SubmissionProducer;
 import com.roczyno.submissionservice.repository.SubmissionRepository;
 import com.roczyno.submissionservice.util.EmailService;
-import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -39,7 +37,7 @@ public class SubmissionServiceImpl  implements SubmissionService{
         sub.setSubmissionTime(LocalDate.now());
 
 		Submission savedSubmission = submissionRepository.save(sub);
-		submissionProducer.sendMessage(assigneeUser.getUsername(),
+		submissionProducer.sendSubmissionMessage(assigneeUser.getUsername(),
 				task.getId(),
 				task.getTitle(),
 				task.getDescription(),
@@ -78,43 +76,9 @@ public class SubmissionServiceImpl  implements SubmissionService{
 
         if ("ACCEPT".equalsIgnoreCase(status)) {
             taskService.completeTask(sub.getId(), jwt);
-            String emailBody = String.format(
-                    "<html>" +
-                            "<body>" +
-                            "<h2>Task Submission Status Update</h2>" +
-                            "<p>Dear %s,</p>" +
-                            "<p>Your recent task submission has been accepted. Congratulations.</p>" +
-                            "<p>Best regards,<br>ADMIN</p>" +
-                            "</body>" +
-                            "</html>",
-                    assignedUser.getUsername()
-
-            );
-			try {
-				emailService.sendSimpleMessage(assignedUser.getEmail(), "Task Status Update", emailBody,
-						"Task manager");
-			} catch (MessagingException | UnsupportedEncodingException e) {
-				throw new RuntimeException(e);
-			}
+			submissionProducer.sendAcceptedMessage(assignedUser.getUsername());
 		} else if ("REJECTED".equalsIgnoreCase(status)) {
-            String emailBody = String.format(
-                    "<html>" +
-                            "<body>" +
-                            "<h2>Task Submission Status Update</h2>" +
-                            "<p>Dear %s,</p>" +
-                            "<p>Your recent task submission has been rejected. Please redo the task.</p>" +
-                            "<p>Best regards,<br>ADMIN</p>" +
-                            "</body>" +
-                            "</html>",
-                    assignedUser.getUsername()
-
-            );
-			try {
-				emailService.sendSimpleMessage(assignedUser.getEmail(), "Task Status Update", emailBody,
-						"Task manager");
-			} catch (MessagingException | UnsupportedEncodingException e) {
-				throw new RuntimeException(e);
-			}
+			submissionProducer.sendDeclinedMessage(assignedUser.getUsername());
 		} else {
             throw new IllegalArgumentException("Invalid status value: " + status);
         }

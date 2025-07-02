@@ -1,5 +1,7 @@
 package com.roczyno.notificationservice.model;
 
+import com.roczyno.notificationservice.rabbitmq.submissionservice.TaskAccepted;
+import com.roczyno.notificationservice.rabbitmq.submissionservice.TaskDeclined;
 import com.roczyno.notificationservice.rabbitmq.submissionservice.TaskSubmitted;
 import com.roczyno.notificationservice.rabbitmq.taskservice.TaskAssigned;
 import lombok.AllArgsConstructor;
@@ -25,4 +27,6 @@ public class Notification {
 	private LocalDateTime notificationDate;
 	private TaskAssigned taskAssigned;
 	private TaskSubmitted taskSubmitted;
+	private TaskAccepted taskAccepted;
+	private TaskDeclined taskDeclined;
 }

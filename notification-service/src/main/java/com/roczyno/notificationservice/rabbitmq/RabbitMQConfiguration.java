@@ -16,6 +16,11 @@ public class RabbitMQConfiguration {
 	}
 
 	@Bean
+	public Queue taskSubmittedQueue() {
+		return new Queue("task-submitted");
+	}
+
+	@Bean
 	public MessageConverter jsonMessageConverter() {
 		return new Jackson2JsonMessageConverter();
 	}

@@ -10,9 +10,19 @@ public class SubmissionProducer {
 	private final RabbitTemplate rabbitTemplate;
 
 
-	public void sendMessage(String assigneeUsername, Long id, String title, String description, String assignedUsername,
-							String githubLink, String deployedUrl, String string) {
+	public void sendSubmissionMessage(String assigneeUsername, Long id, String title, String description, String assignedUsername,
+									  String githubLink, String deployedUrl, String string) {
 		TaskSubmitted taskSubmitted=new TaskSubmitted(assigneeUsername,assignedUsername,id.toString(),title,description,githubLink,deployedUrl);
 		rabbitTemplate.convertAndSend("task-submitted", taskSubmitted);
+	}
+
+	public void sendAcceptedMessage(String assignedUser) {
+		TaskAccepted taskAccepted=new TaskAccepted(assignedUser);
+		rabbitTemplate.convertAndSend("task-accepted", taskAccepted);
+	}
+
+	public void sendDeclinedMessage(String assignedUser) {
+		TaskDeclined taskDeclined=new TaskDeclined(assignedUser);
+		rabbitTemplate.convertAndSend("task-declined", taskDeclined);
 	}
 }

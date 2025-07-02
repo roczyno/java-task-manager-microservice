@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Submission Declined</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+        .header {
+            background-color: #f44336;
+            padding: 10px;
+            color: white;
+            text-align: center;
+        }
+        .content {
+            margin: 20px;
+        }
+        .footer {
+            margin: 20px;
+            font-size: 0.9em;
+            color: #777;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h2>Submission Declined</h2>
+</div>
+<div class="content">
+    <p>Hi <span th:text="${username}">User</span>,</p>
+    <p>We regret to inform you that your task submission has been <strong>declined</strong>.</p>
+    <p>Please review the feedback in your dashboard and consider making improvements for a future submission.</p>
+</div>
+<div class="footer">
+    <p>Best regards,<br/>Notification Service Team</p>
+</div>
+</body>
+</html>

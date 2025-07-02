@@ -18,7 +18,7 @@ public class SubmissionConsumer {
 	private final NotificationService notificationService;
 	private final EmailService emailService;
 
-	@RabbitListener(queues = "task_submitted")
+	@RabbitListener(queues = "task-submitted")
 	public void consumeMessage(TaskSubmitted taskSubmitted) {
 		Notification notification= Notification.builder()
 				.notificationDate(LocalDateTime.now())
@@ -36,5 +36,37 @@ public class SubmissionConsumer {
 		}
 
 
+	}
+
+	@RabbitListener(queues = "task-accepted")
+	public void consumeMessage(TaskAccepted taskAccepted) {
+		Notification notification=Notification.builder()
+				.notificationDate(LocalDateTime.now())
+				.notificationType(NotificationType.TASK_ACCEPTED)
+				.taskAccepted(taskAccepted)
+				.build();
+		notificationService.saveNotification(notification);
+
+		try {
+			emailService.sendSubmissionAcceptedEmail(taskAccepted.assignedUsername());
+		} catch (MessagingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@RabbitListener(queues = "task-declined")
+	public void consumeMessage(TaskDeclined taskDeclined) {
+		Notification notification=Notification.builder()
+				.notificationDate(LocalDateTime.now())
+				.notificationType(NotificationType.TASK_REJECTED)
+				.taskDeclined(taskDeclined)
+				.build();
+		notificationService.saveNotification(notification);
+
+		try {
+			emailService.sendSubmissionDeclinedEmail(taskDeclined.assignedUsername());
+		} catch (MessagingException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

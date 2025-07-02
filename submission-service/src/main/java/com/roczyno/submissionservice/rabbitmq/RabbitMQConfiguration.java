@@ -11,8 +11,18 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfiguration {
 	@Bean
-	public Queue taskAssignedQueue() {
-		return new Queue("task-assigned");
+	public Queue taskSubmittedQueue() {
+		return new Queue("task-submitted");
+	}
+
+	@Bean
+	public Queue taskAcceptedQueue() {
+		return new Queue("task-accepted");
+	}
+
+	@Bean
+	public Queue taskDeclinedQueue() {
+		return new Queue("task-declined");
 	}
 
 	@Bean
