@@ -1,0 +1,13 @@
+eureka:
+  instance:
+    hostname: task_ms_eureka-server
+  client:
+    service-url:
+      defaultZone: http://task_ms_eureka-server:8084/eureka/
+
+spring:
+  cloud:
+    config:
+      override.system-properties: false
+
+

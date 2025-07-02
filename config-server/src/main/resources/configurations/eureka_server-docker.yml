@@ -1,0 +1,8 @@
+eureka:
+  instance:
+    hostname: task_ms_eureka-server
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/

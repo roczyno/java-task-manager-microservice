@@ -1,0 +1,12 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: eureka_server
+  config:
+    import: optional:configserver:http://task_ms_config-server:8888
+
+
+
+

@@ -1,0 +1,24 @@
+spring:
+  jpa:
+    properties:
+      hibernate:
+        globally_quoted_identifiers: 'true'
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: 'true'
+    generate-ddl: 'true'
+    show-sql: 'true'
+    hibernate:
+      ddl-auto: update
+    open-in-view: 'false'
+    database-platform: org.hibernate.dialect.PostgreSQLInnoDBDialect
+
+  datasource:
+    password: roczyno
+    username: postgres
+    url: jdbc:postgresql://task_ms_postgres:5432/taskms_user_db
+  sql:
+    init:
+      mode: always
+
+
+

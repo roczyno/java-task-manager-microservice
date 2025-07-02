@@ -1,0 +1,27 @@
+spring:
+  rabbitmq:
+    host: task_manager_rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+
+  data:
+    mongodb:
+      username: roczyno
+      password: roczyno
+      host: task_manager_mongo_db
+      port: 27017
+      database: notification
+      authentication-database: admin
+
+  mail:
+    host: task_manager_mail_dev
+    port: 1025
+    username: adiabajacob9@gmail.com
+    password: dsjksjfjs
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

@@ -5,7 +5,7 @@ spring:
   application:
     name: task-service
   config:
-    import: optional:configserver:http://localhost:8888
+    import: optional:configserver:http://task_ms_config-server:8888
 
     #rabbit mq
   rabbitmq:
@@ -15,7 +15,7 @@ spring:
     password: guest
 
 user-service:
-  url: http://localhost:8085
+  url: http://task_ms_user-service:8085
 
 #logging:
 #  pattern:

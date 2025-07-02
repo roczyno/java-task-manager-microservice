@@ -15,7 +15,7 @@ spring:
   datasource:
     password: roczyno
     username: postgres
-    url: jdbc:postgresql://localhost:5432/taskms_task_db
+    url: jdbc:postgresql://task_ms_postgres:5432/taskms_task_db
   sql:
     init:
       mode: always
