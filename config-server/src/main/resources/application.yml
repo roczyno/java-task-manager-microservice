@@ -11,3 +11,8 @@ spring:
           native:
               search-locations: classpath:/configurations
 
+logging:
+  pattern:
+    level: "%5p [${spring.application.name}, %X{traceId:-}, %X{spanId:-}]"
+  file:
+    name: config_ms.log

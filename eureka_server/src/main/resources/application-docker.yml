@@ -8,5 +8,9 @@ spring:
     import: optional:configserver:http://task_ms_config-server:8888
 
 
-
+logging:
+  pattern:
+    level: "%5p [${spring.application.name}, %X{traceId:-}, %X{spanId:-}]"
+  file:
+    name: eureka_ms.log
 

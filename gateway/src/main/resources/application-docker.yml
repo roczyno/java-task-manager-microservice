@@ -16,4 +16,9 @@ spring:
 #    service-url:
 #      defaultZone: http://localhost:8084/eureka/
 
+logging:
+  pattern:
+    level: "%5p [${spring.application.name}, %X{traceId:-}, %X{spanId:-}]"
+  file:
+    name: gateway_ms.log
 

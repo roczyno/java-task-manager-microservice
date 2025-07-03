@@ -15,10 +15,10 @@ user-service:
 task-service:
   url: http://task_ms_task-service:8082
 
-#logging:
-#  pattern:
-#    level: "%5p [${spring.application.name}, %X{traceId:-}, %X{spanId:-}]"
-#  file:
-#    name: logs/sub_ms.log
+logging:
+  pattern:
+    level: "%5p [${spring.application.name}, %X{traceId:-}, %X{spanId:-}]"
+  file:
+    name: sub_ms.log
 
 

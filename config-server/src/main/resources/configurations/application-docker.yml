@@ -11,3 +11,16 @@ spring:
       override.system-properties: false
 
 
+  zipkin:
+    base-url: http://task_ms_zipkin:9411
+
+management:
+  tracing:
+    sampling:
+      probability: 1
+
+logging:
+  level:
+    root: DEBUG
+  pattern:
+    level: "%5p [${spring.application.name}, %X{traceId:-}, %X{spanId:-}]"
